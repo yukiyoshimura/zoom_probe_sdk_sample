@@ -10,14 +10,19 @@ class ZoomDiagnostic {
         const prober = new Prober();
         
         try {
-            const config = {
-                probeDuration: 120 * 1000,   // 120秒（公式推奨）
-                connectTimeout: 20 * 1000    // 20秒（公式推奨）
-            };
+            // you can ignore the URLs, so the default URLs that deployed in the ProbeSDK will be used
+            const jsUrl = '';
+            const wasmUrl = '';
+            const config = { probeDuration: 120 * 1000, connectTimeout: 20 * 1000 };
             
-            const report = await prober.startToDiagnose('', '', config, (stats) => {
-                console.log('診断進行中:', stats);
+            const report = await prober.startToDiagnose(jsUrl, wasmUrl, config, (stats) => {
+                console.log(stats);
             });
+            
+            // a DiagnosticReport has main 3 structures we need to handle
+            console.log(report.content.networkDiagnosticReport);
+            console.log(report.content.basicInfo);
+            console.log(report.content.supportedFeatures);
             
             const networkResult = report?.content?.networkDiagnosticReport;
             

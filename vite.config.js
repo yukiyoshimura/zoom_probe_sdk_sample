@@ -2,6 +2,10 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
+  root: 'src',
+  server: {
+    port: 5173
+  },
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/main.js'),
@@ -15,10 +19,10 @@ export default defineConfig({
         globals: {}
       }
     },
-    outDir: 'dist',
+    outDir: '../dist',
     emptyOutDir: true,
     minify: true,
     copyPublicDir: true
   },
-  publicDir: 'src/public'
+  publicDir: 'public'
 });
