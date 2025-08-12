@@ -3,28 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoom Network Diagnostic</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>Zoom Diagnostic API Test</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Zoom ネットワーク診断</h1>
-        
-        <div class="diagnostic-section">
-            <button id="startDiagnostic" class="btn-primary">診断開始</button>
+    <h1>Zoom Diagnostic API Test</h1>
+    <button onclick="testZoomDiagnostic()">診断テスト</button>
+    <div id="result"></div>
+
+    <script>
+        async function testZoomDiagnostic() {
+            const resultEl = document.getElementById('result');
+            resultEl.innerHTML = '診断中...';
             
-            <div id="loadingState" class="loading-state hidden">
-                <div class="spinner"></div>
-                <p>ネットワーク診断中...</p>
-            </div>
-            
-            <div id="resultDisplay" class="result-display hidden">
-                <div id="resultStatus" class="result-status"></div>
-                <div id="resultDetails" class="result-details"></div>
-            </div>
-        </div>
-    </div>
-    
-    <script type="module" src="./main.js"></script>
+            try {
+                const result = await window.ZoomDiagnostic.run();
+                resultEl.innerHTML = result ? 'OK' : 'NG';
+            } catch (error) {
+                resultEl.innerHTML = 'エラー: ' + error.message;
+            }
+        }
+    </script>
 </body>
 </html>

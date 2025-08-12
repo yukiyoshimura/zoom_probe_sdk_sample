@@ -1,34 +1,24 @@
 import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
-  root: 'src',
-  base: '/zoom_probe_sdk_sample/',
   build: {
-    outDir: '../dist',
-    emptyOutDir: true,
+    lib: {
+      entry: path.resolve(__dirname, 'src/main.js'),
+      name: 'ZoomDiagnostic',
+      fileName: 'zoom-diagnostic',
+      formats: ['iife']
+    },
     rollupOptions: {
-      input: {
-        main: 'src/index.html'
-      },
       output: {
-        entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/[name].js',
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.');
-          const extType = info[info.length - 1];
-          if (/\.(css)$/i.test(assetInfo.name)) {
-            return 'css/[name][extname]';
-          }
-          if (/\.(png|jpe?g|gif|svg|ico|webp)$/i.test(assetInfo.name)) {
-            return 'images/[name][extname]';
-          }
-          return '[name][extname]';
-        }
+        extend: true,
+        globals: {}
       }
-    }
+    },
+    outDir: 'dist',
+    emptyOutDir: true,
+    minify: true,
+    copyPublicDir: true
   },
-  server: {
-    host: '0.0.0.0',
-    port: 3000
-  }
+  publicDir: 'src/public'
 });

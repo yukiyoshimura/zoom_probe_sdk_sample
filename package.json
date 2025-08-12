@@ -2,7 +2,7 @@
   "name": "zoom-probe-sdk-sample",
   "version": "1.0.0",
   "description": "Zoom Probe SDK network diagnostic tool for WordPress integration",
-  "main": "src/main.js",
+  "main": "dist/zoom-diagnostic.iife.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
