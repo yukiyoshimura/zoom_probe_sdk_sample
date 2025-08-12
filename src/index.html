@@ -17,7 +17,7 @@
             resultEl.innerHTML = '診断中...';
             
             try {
-                const result = await window.ZoomDiagnostic.run();
+                const result = await window.startToDiagnose();
                 resultEl.innerHTML = result ? 'OK' : 'NG';
             } catch (error) {
                 resultEl.innerHTML = 'エラー: ' + error.message;
