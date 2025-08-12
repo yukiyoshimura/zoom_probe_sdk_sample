@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: 'src',
+  base: '/zoom_probe_sdk_sample/',
   build: {
     outDir: '../dist',
     emptyOutDir: true,

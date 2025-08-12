@@ -1,4 +1,5 @@
 // Zoom Probe SDK Network Diagnostic Tool
+import { Prober } from '@zoom/probesdk';
 
 class ZoomNetworkDiagnostic {
     constructor() {
@@ -60,23 +61,83 @@ class ZoomNetworkDiagnostic {
     }
 
     async simulateZoomProbeTest() {
-        // 実際のZoom Probe SDK実装までの暫定的なシミュレーション
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // ランダムな成功/失敗をシミュレート（実際は Zoom Probe SDK の結果を使用）
-                const success = Math.random() > 0.3; // 70%の確率で成功
-                
-                resolve({
-                    success: success,
-                    latency: success ? Math.floor(Math.random() * 50) + 20 : null,
-                    bandwidth: success ? Math.floor(Math.random() * 100) + 50 : null,
-                    connectivity: success ? 'Good' : 'Poor',
-                    details: success 
-                        ? 'ネットワーク接続は正常です。Zoomサービスへの接続に問題ありません。'
-                        : 'ネットワーク接続に問題があります。インターネット接続を確認してください。'
-                });
-            }, 2000); // 2秒のテスト時間をシミュレート
-        });
+        // 実際のZoom Probe SDK実装
+        const prober = new Prober();
+        
+        try {
+            // ネットワーク診断設定（デフォルト推奨値）
+            const config = {
+                probeDuration: 120 * 1000,   // 120秒（公式推奨）
+                connectTimeout: 20 * 1000    // 20秒（公式推奨）
+                // domainは指定しない（デフォルトを使用）
+            };
+            
+            // 診断実行
+            const report = await prober.startToDiagnose('', '', config, (stats) => {
+                console.log('診断進行中:', stats);
+            });
+            
+            // 結果の解析
+            const networkResult = report?.content?.networkDiagnosticReport;
+            const basicInfo = report?.content?.basicInfo;
+            const supportedFeatures = report?.content?.supportedFeatures;
+            
+            console.log('Network Diagnostic Result:', networkResult);
+            console.log('Basic Info:', basicInfo);
+            console.log('Supported Features:', supportedFeatures);
+            
+            // 診断結果が空の場合
+            if (!networkResult) {
+                return {
+                    success: false,
+                    latency: null,
+                    bandwidth: null,
+                    connectivity: 'Unknown',
+                    details: '診断は完了しましたが、結果データが取得できませんでした。ネットワーク環境またはZoom接続に問題がある可能性があります。',
+                    rawResult: report
+                };
+            }
+            
+            const isSuccess = this.evaluateNetworkResult(networkResult);
+            
+            return {
+                success: isSuccess,
+                latency: networkResult?.statistics?.rtt || null,
+                bandwidth: networkResult?.statistics?.bandwidth || null,
+                connectivity: isSuccess ? 'Good' : 'Poor',
+                details: isSuccess 
+                    ? 'ネットワーク接続は正常です。Zoomサービスへの接続に問題ありません。'
+                    : 'ネットワーク接続に問題があります。インターネット接続を確認してください。',
+                rawResult: networkResult,
+                basicInfo: basicInfo,
+                supportedFeatures: supportedFeatures
+            };
+            
+        } catch (error) {
+            console.error('Zoom Probe SDK エラー:', error);
+            throw new Error(`ネットワーク診断に失敗しました: ${error.message}`);
+        } finally {
+            // リソースのクリーンアップ
+            prober.cleanup();
+        }
+    }
+    
+    evaluateNetworkResult(result) {
+        // ネットワーク診断結果の評価ロジック
+        if (!result || !result.statistics) return false;
+        
+        const stats = result.statistics;
+        
+        // RTT（往復遅延）が300ms以下で良好とする
+        const rttOk = !stats.rtt || stats.rtt < 300;
+        
+        // パケットロス率が5%以下で良好とする
+        const packetLossOk = !stats.packetLoss || stats.packetLoss < 0.05;
+        
+        // ジッターが50ms以下で良好とする
+        const jitterOk = !stats.jitter || stats.jitter < 50;
+        
+        return rttOk && packetLossOk && jitterOk;
     }
 
     showLoading() {
