@@ -52,6 +52,32 @@ function isZoomAccessible(networkResult) {
     console.log("reportをチェックするよ");
     return networkResult.protocols && 
            networkResult.protocols.some(protocol => protocol.isBlocked === false);
+           // TODO 現状だと、Zoom.usとの通信可否を正しく判定できていないのでレスポンスから判定するようにする
+
+//    # Zoom関連のドメインを全てブロック
+// 127.0.0.1 zoom.us
+// 127.0.0.1 www.zoom.us
+// 127.0.0.1 api.zoom.us
+// 127.0.0.1 web.zoom.us
+// 127.0.0.1 cdn.zoom.us
+// 127.0.0.1 static.zoom.us
+
+// # 地域別Zoomドメイン
+// 127.0.0.1 us04web.zoom.us
+// 127.0.0.1 us05web.zoom.us
+// 127.0.0.1 us06web.zoom.us
+// 127.0.0.1 ap01web.zoom.us
+// 127.0.0.1 ap02web.zoom.us
+// 127.0.0.1 eu01web.zoom.us
+// 127.0.0.1 eu02web.zoom.us
+
+// # CDNドメイン
+// 127.0.0.1 d24cgw3uvb9a9h.cloudfront.net
+// 127.0.0.1 source.zoom.us
+
+// # Zoomgov（政府機関向け）
+// 127.0.0.1 zoomgov.com
+// 127.0.0.1 web.zoomgov.com
 }
 
 // CMS統合用のグローバルAPI
